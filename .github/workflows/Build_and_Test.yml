@@ -1,0 +1,25 @@
+name: Build_and_Test
+
+on: push
+
+env:
+  BUILD_TYPE: Release
+
+
+jobs:
+  Build_and_Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Configure CMake
+        run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Test
+        run: for test in $(find ${{github.workspace}}/build -type f -name "ut_*" -executable); do
+             $test || { exit 1; }
+             done
